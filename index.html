@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html>
+<head> 
+	<title>Geospatial Assignment 1</title>
+	
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" /> <!-- we will us e this as the styling script for our webmap-->
+	<link rel="stylesheet" href="css/MarkerCluster.css" />
+	<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+	<link rel="stylesheet" type="text/css" href="css/own_style.css">
+	<link rel="stylesheet" href="css/label.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> <!-- this is the javascript file that does the magic-->
+	<script src="js/Autolinker.min.js"></script>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+</head>
+<body>
+	<div id="map"></div> <!-- this is the initial look of the map. in most cases it is done externally using something like a map.css stylesheet were you can specify the look of map elements, like background color tables and so on.-->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script> <!-- this is the javascript file that does the magic-->
+	<script src="js/leaflet-hash.js"></script>
+	<script src="js/label.js"></script>
+	<script src="js/leaflet.markercluster.js"></script>
+	
+				<script src='data/exp_BusStop.js' ></script>
+				
+				<script src='data/exp_LineSymbolMap.js' ></script>
+				
+				<script src='data/exp_ChoroplethMap.js' ></script>
+				
+				<script src='data/exp_RegionLayer.js' ></script>
+				
+	<script>
+		var map = L.map('map', { zoomControl:true }).fitBounds([[1.22745937756,103.697651611],[1.40424481657,104.038803774]]);
+		var hash = new L.Hash(map); //add hashes to html address to easy share locations
+		var additional_attrib = 'created w. <a href="https://github.com/geolicious/qgis2leaf" target ="_blank">qgis2leaf</a> by <a href="http://www.geolicious.de" target ="_blank">Geolicious</a> & contributors<br>';
+	var feature_group = new L.featureGroup([]);
+
+	var raster_group = new L.LayerGroup([]);
+	
+		var basemap_0 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+			attribution: additional_attrib + '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'});	
+		basemap_0.addTo(map);	
+	var layerOrder=new Array();
+							function pop_RegionLayer(feature, layer) {
+										
+	var popupContent = feature.properties.html_exp;
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_RegionLayerJSON = new L.geoJson(exp_RegionLayer,{
+					onEachFeature: pop_RegionLayer,
+					style: function (feature) {
+						return {color: feature.properties.border_color_qgis2leaf,
+								fillColor: feature.properties.color_qgis2leaf,
+								weight: feature.properties.radius_qgis2leaf,
+								opacity: feature.properties.transp_qgis2leaf,
+								fillOpacity: feature.properties.transp_qgis2leaf};
+						}
+					});
+				feature_group.addLayer(exp_RegionLayerJSON);
+				layerOrder[layerOrder.length] = exp_RegionLayerJSON;
+				for (index = 0; index < layerOrder.length; index++) {
+					map.removeLayer(layerOrder[index]);map.addLayer(layerOrder[index]);
+				}
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						//exp_RegionLayerJSON.addTo(map);
+							function pop_ChoroplethMap(feature, layer) {
+										
+	var popupContent = feature.properties.html_exp;
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_ChoroplethMapJSON = new L.geoJson(exp_ChoroplethMap,{
+					onEachFeature: pop_ChoroplethMap,
+					style: function (feature) {
+						return {fillColor: feature.properties.color_qgis2leaf,
+								color: '#000',
+								weight: 1,
+								opacity: feature.properties.transp_qgis2leaf,
+								fillOpacity: feature.properties.transp_qgis2leaf};
+						}
+					});
+				feature_group.addLayer(exp_ChoroplethMapJSON);
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						//exp_ChoroplethMapJSON.addTo(map);
+							function pop_LineSymbolMap(feature, layer) {
+										
+	var popupContent = feature.properties.html_exp;
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+					var exp_LineSymbolMapJSON = new L.geoJson(exp_LineSymbolMap,{
+						onEachFeature: pop_LineSymbolMap,
+						style: function (feature) {
+							return {weight: feature.properties.radius_qgis2leaf,
+									color: feature.properties.color_qgis2leaf,
+									opacity: feature.properties.transp_qgis2leaf,
+									fillOpacity: feature.properties.transp_qgis2leaf};
+							}
+						});
+					feature_group.addLayer(exp_LineSymbolMapJSON);
+					
+						//add comment sign to hide this layer on the map in the initial view.
+						//exp_LineSymbolMapJSON.addTo(map);
+							function pop_BusStop(feature, layer) {
+										
+	var popupContent = feature.properties.html_exp;
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_BusStopJSON = new L.geoJson(exp_BusStop,{
+					onEachFeature: pop_BusStop,
+					pointToLayer: function (feature, latlng) {
+						return L.marker(latlng, {icon: L.icon({
+							iconUrl: feature.properties.icon_exp,
+							iconSize:     [24, 24], // size of the icon change this to scale your icon (first coordinate is x, second y from the upper left corner of the icon)
+							iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location (first coordinate is x, second y from the upper left corner of the icon)
+							popupAnchor:  [0, -14] // point from which the popup should open relative to the iconAnchor (first coordinate is x, second y from the upper left corner of the icon)
+			 				})
+			 			})
+					}}
+				);
+				
+				var cluster_groupBusStopJSON= new L.MarkerClusterGroup({showCoverageOnHover: false});
+				cluster_groupBusStopJSON.addLayer(exp_BusStopJSON);
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						cluster_groupBusStopJSON.addTo(map);
+		var title = new L.Control();
+		title.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+	    };
+	    title.update = function () {
+			this._div.innerHTML = '<h2>Bus Route Connectivity in Singapore</h2>Bus Route Connectivity in Singapore'
+		};
+		title.addTo(map);
+	var baseMaps = {
+		'OSM Standard': basemap_0
+	};
+	L.control.layers(baseMaps,{"BusStop": cluster_groupBusStopJSON,"LineSymbolMap": exp_LineSymbolMapJSON,"ChoroplethMap": exp_ChoroplethMapJSON,"RegionLayer": exp_RegionLayerJSON},{collapsed:false}).addTo(map);
+	L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(map);
+	</script>
+</body>
+</html>
+	
